@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital CRM — Панель Адміністратора</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <header class="top-bar">
+        <h1>Hospital CRM — Панель управління записами до лікаря</h1>
+        <span class="role-badge">Роль: Адміністратор</span>
+    </header>
+
+    <main class="dashboard-grid">
+        <section class="panel">
+            <h2>1. База пацієнтів</h2>
+            <form id="patient-form" class="inline-form">
+                <input type="text" id="pat-name" placeholder="ПІБ пацієнта" required>
+                <input type="text" id="pat-phone" placeholder="Телефон (+380...)" required>
+                <input type="date" id="pat-birth" required>
+                <button type="submit">Додати пацієнта</button>
+            </form>
+            <div class="search-box">
+                <input type="text" id="pat-search" placeholder="Миттєвий пошук за ПІБ або телефоном...">
+            </div>
+            <ul id="patients-list" class="entity-list"></ul>
+
+            <hr>
+
+            <h2>2. База лікарів</h2>
+            <form id="doctor-form" class="inline-form">
+                <input type="text" id="doc-name" placeholder="ПІБ лікаря" required>
+                <input type="text" id="doc-spec" placeholder="Спеціальність (напр. Терапевт)" required>
+                <input type="text" id="doc-room" placeholder="Кабінет (напр. 204)" required>
+                <button type="submit">Додати лікаря</button>
+            </form>
+            <div class="search-box">
+                <input type="text" id="doc-filter" placeholder="Фільтр за спеціальністю...">
+            </div>
+            <ul id="doctors-list" class="entity-list"></ul>
+        </section>
+
+        <section class="panel">
+            <h2>3. Календар розкладу та запис на прийом</h2>
+            <div class="schedule-controls">
+                <label>Лікар:
+                    <select id="schedule-doctor"></select>
+                </label>
+                <label>Дата:
+                    <input type="date" id="schedule-date">
+                </label>
+                <label>Пацієнт для запису:
+                    <select id="schedule-patient"></select>
+                </label>
+            </div>
+
+            <div id="status-banner" class="status-banner hidden"></div>
+
+            <div id="slots-container" class="slots-grid"></div>
+
+            <hr>
+            <h2>4. Системний журнал дій (Audit Log)</h2>
+            <ul id="audit-list" class="audit-list"></ul>
+        </section>
+    </main>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
