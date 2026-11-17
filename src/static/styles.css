@@ -85,6 +85,33 @@ button:hover {
     background-color: #1d4ed8;
 }
 
+.btn-sm {
+    padding: 4px 8px;
+    font-size: 12px;
+}
+
+.btn-secondary {
+    background-color: #475569;
+}
+
+.btn-secondary:hover {
+    background-color: #334155;
+}
+
+.btn-danger {
+    background-color: #dc2626;
+}
+
+.btn-danger:hover {
+    background-color: #b91c1c;
+}
+
+.item-actions, .slot-actions {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+}
+
 .search-box {
     margin-bottom: 10px;
 }

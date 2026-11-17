@@ -18,10 +18,26 @@ async function loadPatients(query = "") {
 
     patients.forEach(p => {
         const li = document.createElement("li");
-        li.innerHTML = `
-            <span><strong>${p.full_name}</strong> (${p.phone_number}, ${p.birth_date})</span>
-            <button onclick="deletePatient(${p.id})" style="background:#dc2626;padding:4px 8px;">Видалити</button>
-        `;
+        const infoSpan = document.createElement("span");
+        infoSpan.innerHTML = `<strong>${p.full_name}</strong> (${p.phone_number}, ${p.birth_date})`;
+
+        const actionsDiv = document.createElement("div");
+        actionsDiv.className = "item-actions";
+
+        const editBtn = document.createElement("button");
+        editBtn.textContent = "Редагувати";
+        editBtn.className = "btn-secondary btn-sm";
+        editBtn.onclick = () => editPatient(p.id, p.full_name, p.phone_number);
+
+        const delBtn = document.createElement("button");
+        delBtn.textContent = "Видалити";
+        delBtn.className = "btn-danger btn-sm";
+        delBtn.onclick = () => deletePatient(p.id);
+
+        actionsDiv.appendChild(editBtn);
+        actionsDiv.appendChild(delBtn);
+        li.appendChild(infoSpan);
+        li.appendChild(actionsDiv);
         list.appendChild(li);
 
         const opt = document.createElement("option");
@@ -31,9 +47,35 @@ async function loadPatients(query = "") {
     });
 }
 
+async function editPatient(id, currentName, currentPhone) {
+    const newName = prompt("Введіть нове ПІБ пацієнта:", currentName);
+    if (newName === null) return;
+    const newPhone = prompt("Введіть новий номер телефону:", currentPhone);
+    if (newPhone === null) return;
+
+    const res = await fetch(`/api/patients/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            full_name: newName.trim(),
+            phone_number: newPhone.trim()
+        })
+    });
+
+    if (res.ok) {
+        showBanner("Дані пацієнта оновлено!");
+        await loadPatients(document.getElementById("pat-search").value);
+        await loadSchedule();
+        await loadAuditLogs();
+    } else {
+        const err = await res.json();
+        showBanner(err.detail || "Помилка оновлення даних пацієнта", true);
+    }
+}
+
 async function deletePatient(id) {
     await fetch(`/api/patients/${id}`, { method: "DELETE" });
-    await loadPatients();
+    await loadPatients(document.getElementById("pat-search").value);
     await loadSchedule();
     await loadAuditLogs();
 }
@@ -57,9 +99,7 @@ async function loadDoctors(specialty = "") {
         select.appendChild(opt);
     });
 
-    if (doctors.length > 0) {
-        await loadSchedule();
-    }
+    await loadSchedule();
 }
 
 async function loadSchedule() {
@@ -89,11 +129,38 @@ async function loadSchedule() {
             card.innerHTML = `
                 <div class="slot-time">${slot.time}</div>
                 <div style="font-size:12px;margin-bottom:6px;">${slot.patient_name}</div>
-                <button onclick="cancelAppointment(${slot.appointment_id})" style="background:#dc2626;">Скасувати</button>
+                <div class="slot-actions">
+                    <button onclick="rescheduleAppointment(${slot.appointment_id}, '${slot.time}')" class="btn-secondary btn-sm">Перенести</button>
+                    <button onclick="cancelAppointment(${slot.appointment_id})" class="btn-danger btn-sm">Скасувати</button>
+                </div>
             `;
         }
         container.appendChild(card);
     });
+}
+
+async function rescheduleAppointment(appId, currentTimeStr) {
+    const dateVal = scheduleDateInput.value;
+    const newTimeStr = prompt("Введіть новий час прийому (ГГ:ХХ, напр. 14:30):", currentTimeStr);
+    if (!newTimeStr || newTimeStr.trim() === currentTimeStr) return;
+
+    const cleanTime = newTimeStr.trim();
+    const res = await fetch(`/api/appointments/${appId}/reschedule`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            new_time: `${dateVal}T${cleanTime}:00`
+        })
+    });
+
+    if (res.ok) {
+        showBanner(`Запис перенесено на ${cleanTime}!`);
+        await loadSchedule();
+        await loadAuditLogs();
+    } else {
+        const err = await res.json();
+        showBanner(err.detail || "Помилка перенесення запису", true);
+    }
 }
 
 async function bookSlot(timeStr) {

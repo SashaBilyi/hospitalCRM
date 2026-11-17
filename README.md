@@ -8,26 +8,30 @@
 
 ```text
 hospital-crm/
-├── docs/                   # Проектна документація 
-├── src/                    # Вихідний код інтегрованої системи
+├── docs/                   # Проектна документація
+├── src/                    # Вихідний код системи
 │   ├── static/             # Клієнтський інтерфейс Адміністратора (Web UI)
-│   │   ├── index.html      # Панель керування та календар розкладу
-│   │   ├── styles.css      # Адаптивна стилізація 
-│   │   └── app.js          # Клієнтська логіка взаємодії з REST API (Fetch/JSON)
+│   │   ├── index.html      # Інтерактивний календар розкладу та форми CRM
+│   │   ├── styles.css      # Адаптивні стилі (ПК 1024x768+ та планшети)
+│   │   └── app.js          # Логіка клієнтських запитів до REST API
 │   ├── __init__.py
-│   ├── database.py         # Конфігурація SQLAlchemy та пулу з'єднань PostgreSQL
-│   ├── models.py           # ORM-моделі: Patient, Doctor, Appointment, AuditLog
-│   ├── schemas.py          # Pydantic DTO-схеми валідації запитів та відповідей
-│   ├── services.py         # Бізнес-логіка та контроль конфліктів розкладу
-│   ├── routers.py          # Маршрутизатори REST API (/api/patients, /api/doctors, /api/appointments)
-│   └── main.py             # Інтеграція API роутерів та роздачі статики Web UI
-├── tests/                  # Тестовий пакет системи
-│   └── __init__.py
+│   ├── database.py         # Підключення до БД та Dependency Injection сесій
+│   ├── models.py           # ORM-моделі (Patient, Doctor, Appointment, AuditLog)
+│   ├── schemas.py          # Pydantic DTO-схеми валідації
+│   ├── services.py         # Сервісний шар бізнес-логіки за принципами SOLID
+│   ├── routers.py          # Маршрутизатори REST API
+│   └── main.py             # Точка входу FastAPI-додатка
+├── tests/                  # Декомпозований пакет автоматизованих тестів (Лаб №6)
+│   ├── __init__.py
+│   ├── conftest.py         # Спільні фікстури pytest та конфігурація in-memory БД
+│   ├── test_unit.py        # Юніт-тести моделей та сервісів бізнес-логіки
+│   ├── test_component.py   # Компонентні тести REST API та обробки помилок
+│   └── test_system.py      # Системні тести наскрізних сценаріїв та валідація НФВ
 ├── .gitignore
-├── Dockerfile              # Конфігурація збірки образу FastAPI-додатка
-├── docker-compose.yml      # Оркестрація контейнерів FastAPI (web) + PostgreSQL (db)
-├── requirements.txt        # Зафіксовані версії залежностей Python
-└── README.md               # Документація проекту
+├── Dockerfile
+├── docker-compose.yml
+├── requirements.txt
+└── README.md
 ```
 
 ---
